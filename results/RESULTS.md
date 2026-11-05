@@ -82,10 +82,11 @@ distributions. Artifacts: `exp2_rejection_rates.csv`,
 **Executed configuration:** 200 replications (`EXP2_REPLICATIONS_RUN = 200`),
 reduced from the paper's 1000 (`EXP2_REPLICATIONS_PAPER = 1000`) to fit the
 time available for this replication; `python -m exp.exp2_static_backtest
---full` runs the paper's 1000 replications. A reduced end-to-end timing run
-(200 replications × 4 distributions × 2 window sizes × 4 modellers × 100
-re-estimations) took about 35 minutes; scaling to 1000 replications is
-estimated at roughly 3 hours, which would not leave enough time for the
+--full` runs the paper's 1000 replications. A timing measurement of this
+configuration (4 distributions × 2 window sizes × 4 modellers × 100
+re-estimations per replication) ran at about 25 seconds per replication, so
+200 replications take about 84 minutes and the paper's 1000 replications are
+estimated at roughly 7 hours, which would not leave enough time for the
 remaining experiments and the fix loop, so the reduced count was kept for the
 reported run. The rolling-window mechanics, estimation procedure and test
 statistics are unchanged.
@@ -242,8 +243,9 @@ than a confirmed cause.
 - **Experiment 2** ran at 200 Monte Carlo replications instead of the
   paper's 1000 (`EXP2_REPLICATIONS_RUN` vs. `EXP2_REPLICATIONS_PAPER` in
   `src/config.py`) to fit the time available for this replication; a timed
-  reduced run (200 reps) took about 35 minutes, and scaling to 1000 reps is
-  estimated at roughly 3 hours. Run `python -m exp.exp2_static_backtest
+  measured rate of about 25 seconds per replication means 200 reps take about
+  84 minutes, and scaling to 1000 reps is estimated at roughly 7 hours. Run
+  `python -m exp.exp2_static_backtest
   --full` for the paper's full replication count. The rolling-window
   mechanics, estimation windows (n2=250/500), re-estimation step (10 days)
   and test statistics are unchanged.
