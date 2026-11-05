@@ -83,6 +83,7 @@ def fit_garch_norm(window: np.ndarray) -> dict:
     return {
         "omega": p["omega"], "alpha1": p["alpha[1]"], "beta1": p["beta[1]"],
         "sigma2_last": float(res.conditional_volatility[-1] ** 2), "loss_last": float(window[-1]),
+        "std_resid": res.std_resid,
     }
 
 

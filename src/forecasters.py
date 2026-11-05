@@ -78,3 +78,58 @@ def rolling_backtest_counts(
             bin_idx = np.searchsorted(var_forecasts[t], loss_t, side="right")
             counts[b, bin_idx] += 1
     return counts
+
+
+def rolling_backtest_var_forecasts(
+    losses: np.ndarray,
+    n2: int,
+    step: int,
+    alpha_grid_interior: np.ndarray,
+    block_forecast_fn: Callable[[np.ndarray, np.ndarray, int], np.ndarray],
+) -> np.ndarray:
+    """Same rolling, no-look-ahead loop as `rolling_backtest_counts`, but
+    returns the full (n, len(alpha_grid_interior)) matrix of per-day VaR
+    forecasts instead of already-binned counts. Used once at the finest
+    N = 64 grid (Sec. 3.1.1) so that every coarser N's bin counts can be
+    derived from the same, single pass of model (re-)fitting -- see
+    `subgrid_indices` below for why this is exact, not an approximation.
+    """
+    n = len(losses) - n2
+    assert n > 0 and n % step == 0, "backtest length n must be a multiple of `step`"
+    n_blocks = n // step
+    out = np.empty((n, len(alpha_grid_interior)))
+    for b in range(n_blocks):
+        start = n2 + b * step
+        window = losses[start - n2:start]
+        future = losses[start:start + step]
+        out[b * step:(b + 1) * step] = block_forecast_fn(window, future, step)
+    return out
+
+
+def subgrid_indices(n_levels_fine: int, n_levels_coarse: int) -> np.ndarray:
+    """0-based positions into the N = `n_levels_fine` interior alpha grid
+    that reproduce the N = `n_levels_coarse` interior grid exactly.
+
+    By Eq. (2.1), alpha_j = alpha + (j-1)/N * (1-alpha); for N_coarse
+    dividing N_fine, the coarse grid's j-th point (j=1..N_coarse) equals
+    the fine grid's point at position 1 + (j-1) * (N_fine / N_coarse), i.e.
+    the coarse grid is an exact subsequence of the fine one (both start at
+    alpha_1 = alpha regardless of N). This means the finest grid's VaR
+    forecasts can be reused for every coarser N without refitting.
+    """
+    assert n_levels_fine % n_levels_coarse == 0
+    ratio = n_levels_fine // n_levels_coarse
+    return np.arange(n_levels_coarse) * ratio
+
+
+def counts_from_forecasts(realized_losses: np.ndarray, var_forecasts: np.ndarray) -> np.ndarray:
+    """Bin `realized_losses` (shape (n,)) against a (n, N) matrix of per-day
+    VaR forecasts at N interior levels into total exception counts
+    O_0, ..., O_N (shape (N+1,)), one-sided as in `rolling_backtest_counts`.
+    """
+    n_bins = var_forecasts.shape[1] + 1
+    bin_idx = np.array([
+        np.searchsorted(var_forecasts[t], realized_losses[t], side="right")
+        for t in range(len(realized_losses))
+    ])
+    return np.bincount(bin_idx, minlength=n_bins)

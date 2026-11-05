@@ -6,7 +6,13 @@ from __future__ import annotations
 import numpy as np
 
 from src.distributions import get_distribution
-from src.forecasters import rolling_backtest_counts, static_block_quantiles
+from src.forecasters import (
+    counts_from_forecasts,
+    rolling_backtest_counts,
+    rolling_backtest_var_forecasts,
+    static_block_quantiles,
+    subgrid_indices,
+)
 from src.multinomial_tests import full_alpha_grid
 
 
@@ -63,3 +69,37 @@ def test_rolling_backtest_counts_bins_consistently_with_searchsorted() -> None:
     assert counts[0, 0] == 2  # the two -5's
     assert counts[0, 1] == 6  # -1,0,1 twice
     assert counts[0, 2] == 2  # the two 5's
+
+
+def test_subgrid_indices_reproduce_coarser_alpha_grids() -> None:
+    """The N=8 interior grid must be an exact subsequence of the N=64 one
+    (Eq. 2.1: alpha_j = alpha + (j-1)/N*(1-alpha))."""
+    alpha = 0.975
+    fine = full_alpha_grid(alpha, 64)[1:-1]
+    coarse = full_alpha_grid(alpha, 8)[1:-1]
+    idx = subgrid_indices(64, 8)
+    assert idx.shape == (8,)
+    assert np.allclose(fine[idx], coarse)
+
+
+def test_counts_from_forecasts_matches_rolling_backtest_counts() -> None:
+    """Computing forecasts once at N=64 and deriving N=4 counts via
+    `subgrid_indices` must match running the rolling backtest directly at
+    N=4."""
+    rng = np.random.default_rng(32)
+    n2, step, n_blocks = 100, 10, 5
+    losses = rng.standard_normal(n2 + n_blocks * step)
+    dist = get_distribution("normal")
+
+    def block_fn(window, future, horizon):
+        return static_block_quantiles("oracle", dist, window, horizon, full_alpha_grid(0.975, 64)[1:-1])
+
+    forecasts = rolling_backtest_var_forecasts(losses, n2, step, full_alpha_grid(0.975, 64)[1:-1], block_fn)
+    idx = subgrid_indices(64, 4)
+    counts_derived = counts_from_forecasts(losses[n2:], forecasts[:, idx])
+
+    def block_fn_4(window, future, horizon):
+        return static_block_quantiles("oracle", dist, window, horizon, full_alpha_grid(0.975, 4)[1:-1])
+
+    counts_direct = rolling_backtest_counts(losses, n2, step, full_alpha_grid(0.975, 4), block_fn_4).sum(axis=0)
+    assert np.array_equal(counts_derived, counts_direct)
