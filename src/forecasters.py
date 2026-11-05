@@ -14,8 +14,12 @@ from src.distributions import Distribution
 from src.parametric_fits import FIT_FUNCTIONS, quantiles_from_fit
 
 # True family of each simulated distribution (Sec. 3.1), used by the "good"
-# modeller to pick which parametric family to fit by MLE.
-TRUE_FAMILY = {"normal": "normal", "t5": "t", "t3": "t", "skt3": "skewed_t"}
+# modeller to pick which parametric family to fit by MLE. Keyed by the
+# `.name` attribute of the distribution objects returned by
+# `src.distributions.get_distribution` (t5 and t3 share name "t": the
+# "good" modeller fits the Student-t family by MLE regardless of the true
+# degrees of freedom, which is itself estimated from the data).
+TRUE_FAMILY = {"normal": "normal", "t": "t", "skt3": "skewed_t"}
 
 
 def static_block_quantiles(
