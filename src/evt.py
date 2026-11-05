@@ -4,10 +4,10 @@ residuals"). The paper does not specify the exact EVT variant; this module
 follows the standard POT approach of McNeil, Frey & Embrechts (2015), Ch. 5,
 which the paper's bibliography cites for VaR/ES estimation background.
 
-Library search (Context7): `scipy.stats.genpareto` provides the GPD fit and
-quantile function used below (`fit`, `ppf`); the POT tail-quantile formula
-itself is textbook risk-management methodology, implemented here following
-McNeil, Frey & Embrechts (2015), Eq. (5.15)-(5.16).
+`scipy.stats.genpareto` provides the GPD fit and quantile function used
+below (`fit`, `ppf`); the POT tail-quantile formula itself is textbook
+risk-management methodology, implemented here following McNeil, Frey &
+Embrechts (2015), Eq. (5.15)-(5.16).
 """
 
 from __future__ import annotations

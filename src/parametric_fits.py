@@ -3,10 +3,10 @@ the "good" and "poor" modellers of Sec. 3.2.1: the good modeller estimates
 the correct distribution family by MLE on the rolling window, the poor
 modeller always fits a normal distribution regardless of the true family.
 
-Library search (Context7): `scipy.stats.norm.fit` and `scipy.stats.t.fit`
-cover the normal and (unstandardized) Student t MLE fits directly. No
-library fits the Fernandez & Steel (1998) skewed-t location-scale family,
-so its MLE is implemented from scratch below (custom implementation,
+`scipy.stats.norm.fit` and `scipy.stats.t.fit` cover the normal and
+(unstandardized) Student t MLE fits directly. No library fits the
+Fernandez & Steel (1998) skewed-t location-scale family, so its MLE is
+implemented from scratch below (custom implementation,
 Fernandez & Steel (1998); paper Sec. 3.1.1 for the family definition).
 """
 

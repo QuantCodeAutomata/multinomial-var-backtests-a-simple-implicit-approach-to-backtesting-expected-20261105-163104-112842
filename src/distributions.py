@@ -6,10 +6,10 @@ All four distributions are calibrated to have mean zero and variance one,
 as stated in the paper ("These distributions have all been calibrated to
 have mean zero and variance one.", Sec. 3.1.1).
 
-Library search (Context7): scipy.stats provides `norm` and `t`, used
-directly below. No maintained Python library implements the Fernandez &
-Steel (1998) skew transform with the exact standardisation used in this
-paper, so it is implemented from scratch (custom implementation, paper
+scipy.stats provides `norm` and `t`, used directly below. No maintained
+Python library implements the Fernandez & Steel (1998) skew transform with
+the exact standardisation used in this paper, so it is implemented from
+scratch (custom implementation, paper
 Sec. 3.1.1 and Fernandez & Steel (1998), eq. for first two moments of the
 skewed family).
 """

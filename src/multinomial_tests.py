@@ -2,10 +2,10 @@
 "Multinomial VaR Backtests: A simple implicit approach to backtesting
 expected shortfall", Section 2.
 
-Library search (Context7): statsmodels and scipy.stats provide generic
-chi-squared / binomial tests but not the Nass (1959) small-sample
-correction or the constrained normal-family LRT used in this paper, so
-both are implemented from scratch, exactly as specified in Sec. 2.2 and
+statsmodels and scipy.stats provide generic chi-squared / binomial tests
+but not the Nass (1959) small-sample correction or the constrained
+normal-family LRT used in this paper, so both are implemented from
+scratch, exactly as specified in Sec. 2.2 and
 Sec. 3.1.1. The binomial Wald/score/LRT tests are likewise implemented
 directly from their textbook formulas (no library exposes the specific
 one- and two-sided variants compared in Table 2 of the paper).

@@ -1,11 +1,10 @@
 """GARCH(1,1)-t data-generating process used in the dynamic backtests of
 Sec. 4 ("Dynamic Backtesting"), and the GARCH forecasters that model it.
 
-Library search (Context7): `arch.univariate` (ConstantMean/ZeroMean with
-GARCH or ARCH volatility and a Student's t or Normal error distribution)
-implements exactly the model class the paper fits and simulates, so
-simulation and model fitting both go through `arch_model` rather than a
-hand-rolled GARCH recursion.
+`arch.univariate` (ConstantMean/ZeroMean with GARCH or ARCH volatility and
+a Student's t or Normal error distribution) implements exactly the model
+class the paper fits and simulates, so simulation and model fitting both
+go through `arch_model` rather than a hand-rolled GARCH recursion.
 """
 
 from __future__ import annotations
