@@ -1,0 +1,11 @@
+numpy
+pandas
+scipy
+statsmodels
+matplotlib
+seaborn
+arch
+requests
+python-dotenv
+pytest
+quantstats
